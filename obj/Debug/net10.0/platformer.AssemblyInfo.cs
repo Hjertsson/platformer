@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("platformer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f48782125a7bf153e8efd8be9e4f99543bb77022")]
 [assembly: System.Reflection.AssemblyProductAttribute("platformer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("platformer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
