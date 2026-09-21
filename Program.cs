@@ -7,6 +7,8 @@ namespace platformer;
 
 class Program
 {
+    public const int SCREEN_HEIGHT = 300;
+    public const int SCREEN_WIDTH = 400;
     static void Main(string[] args)
     {
         Scene scene = new Scene();

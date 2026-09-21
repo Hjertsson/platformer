@@ -74,8 +74,6 @@ public class Scene
             if (entity.Dead) entities.RemoveAt(i);
             else i++;
         }
-
-
     }
 
     public void Reload()
@@ -141,6 +139,20 @@ public class Scene
         
         currentScene = nextScene;
         nextScene = null;
+    }
+
+    public bool FindByType<T>(out T found) where T : Entity //TODO: Vad är det som sker i denna funktionen
+    {
+        foreach (var entity in entities)
+        {
+            if (!entity.Dead && entity is T typed)
+            {
+                found = typed;
+                return true;
+            }
+        }
+        found = default(T);
+        return false;
     }
     
     public void RenderAll(RenderTarget target)

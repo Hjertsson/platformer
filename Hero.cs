@@ -23,6 +23,11 @@ public class Hero : Entity
 
     public override void Update(Scene scene, float dt)
     {
+        if (IsOutOfBounds())
+        {
+            scene.Reload();
+        }
+        
         if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
         {
             scene.TryMove(this, new Vector2f(-WalkSpeed * dt, 0));
@@ -33,6 +38,7 @@ public class Hero : Entity
             scene.TryMove(this, new Vector2f(WalkSpeed * dt, 0));
             faceRight = true;
         }
+
         if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
         {
             if (isGrounded && !isUpPressed)
@@ -44,23 +50,50 @@ public class Hero : Entity
             {
                 isUpPressed = false;
             }
-            
 
-            isGrounded = false;
-            Vector2f velocity = new Vector2f(0, verticalSpeed * dt);
-            if (scene.TryMove(this, velocity))
+        }
+
+        isGrounded = false;
+        Vector2f velocity = new Vector2f(0, verticalSpeed * dt);
+        if (scene.TryMove(this, velocity))
+        {
+            if (verticalSpeed > 0.0f)
             {
-                if (verticalSpeed > 0.0f)
-                {
-                    isGrounded = true;
-                }
+                isGrounded = true;
                 verticalSpeed = 0.0f;
             }
-        }
+            else
+            {
+                verticalSpeed = 0.5f * verticalSpeed;
+            }
+        }    
+        
+        
         verticalSpeed += GravityForce * dt;
         if (verticalSpeed > 500.0f) verticalSpeed = 500.0f;
+
+    }
+
+    public override FloatRect Bounds
+    {
+        get
+        {
+            var bounds = base.Bounds;
+            bounds.Left += 3;
+            bounds.Width -= 6;
+            bounds.Top += 3;
+            bounds.Height -= 3;
+            return bounds;
+        }
+    }
+    private bool IsOutOfBounds()
+    {
+        bool left = this.sprite.Position.X < 0;
+        bool top = this.sprite.Position.Y < 0;
+        bool right = this.sprite.Position.X >= Program.SCREEN_WIDTH;
+        bool bottom = this.sprite.Position.Y >= Program.SCREEN_HEIGHT;
         
-        
+        return left || right || top || bottom;
     }
 
     public override void Render(RenderTarget target)
