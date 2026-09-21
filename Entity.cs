@@ -29,18 +29,19 @@ public class Entity
 
     public virtual FloatRect Bounds => sprite.GetGlobalBounds();
 
-    public void Create(Scene scene)
+    public virtual void Create(Scene scene)
+    {
+        sprite.Texture = scene.LoadTexture(textureName);
+    }
+
+    public virtual bool Solid => false; 
+    public virtual void Update(Scene scene, float dt)
     {
         
     }
 
-    public void Update(Scene scene, float dt)
+    public virtual void Render(RenderTarget target)
     {
-        
-    }
-
-    public void Render(RenderTarget target)
-    {
-        
+        target.Draw(sprite);
     }
 }

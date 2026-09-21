@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿using System.Text;
+using Platformer;
+using SFML.Graphics;
 using SFML.System;
 
 namespace platformer;
@@ -7,6 +9,8 @@ public class Scene
 {
     private readonly Dictionary<string, Texture> textures;
     private readonly List<Entity> entities;
+    private string nextScene;
+    private string currentScene;
 
     public Scene()
     {
@@ -18,6 +22,31 @@ public class Scene
         entities.Add(entity);
         entity.Create(this); // Ett av objekten som ärver från Classen Entity kallar på Create i Class Entity och skapar sig själv.
     }
+
+    public bool TryMove(Entity entity, Vector2f movement)
+    {
+        entity.Position += movement;
+        bool collided = false;
+
+        for (int i = 0; i < entities.Count; i++)
+        {
+            Entity other = entities[i];
+            if(!other.Solid) continue;
+            if(other == entity) continue;
+
+            FloatRect boundsA = entity.Bounds;
+            FloatRect boundsB = other.Bounds;
+            if (Collision.RectangleRectangle(boundsA, boundsB, out Collision.Hit hit))
+            {
+                entity.Position += hit.Normal * hit.Overlap;
+                i = -1;
+                collided = true;
+            }
+        }
+        return collided;
+    }
+    
+    
     public Texture LoadTexture(string name)
     {
         if (textures.TryGetValue(name, out Texture found)) return found; //Läser igenom dictionaryn ifall texturen som har namnet som skickas in, isåfall returnerar den texturen
@@ -32,6 +61,7 @@ public class Scene
     }
     public void UpdateAll(float dt)
     {
+        HandleSceneChange();
         for (int i = entities.Count - 1; i >= 0; i--)
         {
             Entity entity = entities[i];
@@ -47,6 +77,72 @@ public class Scene
 
 
     }
+
+    public void Reload()
+    {
+        nextScene = currentScene;
+    }
+
+    public void Load(String scene)
+    {
+        nextScene = scene;
+    }
+
+    private void HandleSceneChange()
+    {
+        if (nextScene == null) return;
+        entities.Clear();
+        Spawn(new Background());
+
+        string file = $"assets/{nextScene}.txt";
+        Console.WriteLine($"Loading scene '{file}'");
+
+        foreach (string line in File.ReadLines(file,Encoding.UTF8))
+        {
+            string parsed = line.Trim();
+            if (line.Length != 0)
+            {
+                int commentAt = parsed.IndexOf('#');
+                if (commentAt >= 0)
+                {
+                    parsed = parsed.Substring(0, commentAt);
+                    parsed = parsed.Trim();
+                }
+
+                string[] words = parsed.Split(" ");
+                Vector2f pos = new Vector2f();
+                switch (words[0])
+                {
+                    case "d":
+                        Door door = new Door();
+                        door.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(door);
+                        door.NextRoom = words[3];
+                        break;
+                    case "k":
+                        Key key = new Key();
+                        key.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(key);
+                        break;
+                    case "w":
+                        Platform platform = new Platform();
+                        platform.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(platform);
+                        break;
+                    case "h":
+                        Hero hero = new Hero();
+                        hero.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(hero);
+                        break;
+
+                }
+            }
+        }
+        
+        currentScene = nextScene;
+        nextScene = null;
+    }
+    
     public void RenderAll(RenderTarget target)
     {
         for (int i = 0; i < entities.Count; i++)
