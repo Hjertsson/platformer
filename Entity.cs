@@ -9,12 +9,11 @@ public class Entity
     private readonly string textureName;
     protected readonly Sprite sprite;
     public bool Dead;
-    
-    public Entity()
+
+
+    protected Entity()
     {
-        
     }
-    
     protected Entity(string textureName)
     {
         this.textureName = textureName;

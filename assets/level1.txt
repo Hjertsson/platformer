@@ -2,6 +2,9 @@
 d 54 270 level0
 k 198 54
 
+# Coin
+c 214 72
+
 # Hero
 h 54 54
 

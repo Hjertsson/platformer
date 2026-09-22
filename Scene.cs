@@ -9,6 +9,8 @@ public class Scene
 {
     private readonly Dictionary<string, Texture> textures;
     private readonly List<Entity> entities;
+    private Text gui;
+    public int coinsCollected = 0;
     private string nextScene;
     private string currentScene;
 
@@ -16,6 +18,10 @@ public class Scene
     {
         textures = new Dictionary<string, Texture>();
         entities = new List<Entity>();
+        gui = new Text();
+        gui.CharacterSize = 18;
+        gui.Font = new Font("assets/future.ttf");
+        gui.FillColor = Color.Black;
     }
     public void Spawn(Entity entity)
     {
@@ -91,7 +97,6 @@ public class Scene
         if (nextScene == null) return;
         entities.Clear();
         Spawn(new Background());
-
         string file = $"assets/{nextScene}.txt";
         Console.WriteLine($"Loading scene '{file}'");
 
@@ -132,11 +137,15 @@ public class Scene
                         hero.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
                         Spawn(hero);
                         break;
-
+                    case "c":
+                        Coin coin = new Coin();
+                        coin.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(coin);
+                        break;
                 }
             }
         }
-        
+
         currentScene = nextScene;
         nextScene = null;
     }
@@ -161,5 +170,8 @@ public class Scene
         {
             entities[i].Render(target);
         }
+        gui.DisplayedString = $"Coins: {coinsCollected}";
+        gui.Position = new Vector2f(Program.SCREEN_WIDTH - gui.GetGlobalBounds().Width - 42, 28);
+        target.Draw(gui);
     }
 }
