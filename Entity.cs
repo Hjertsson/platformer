@@ -9,11 +9,8 @@ public class Entity
     private readonly string textureName;
     protected readonly Sprite sprite;
     public bool Dead;
-
-
-    protected Entity()
-    {
-    }
+    
+    protected Entity() {}
     protected Entity(string textureName)
     {
         this.textureName = textureName;
@@ -34,10 +31,8 @@ public class Entity
     }
 
     public virtual bool Solid => false; 
-    public virtual void Update(Scene scene, float dt)
-    {
-        
-    }
+    public virtual void CheckHit(Scene scene){}
+    public virtual void Update(Scene scene, float dt) {}
 
     public virtual void Render(RenderTarget target)
     {

@@ -6,18 +6,21 @@ namespace platformer;
 
 public class Hero : Entity
 {
-    public const float WalkSpeed = 100.0f;
-    public const float JumpForce = 250.0f;
-    public const float GravityForce = 400.0f;
+    private const float WalkSpeed = 100.0f;
+    private const float JumpForce = 250.0f;
+    private const float GravityForce = 400.0f;
+    private float timer;
     private float verticalSpeed;
     private bool isGrounded;
     private bool isUpPressed;
+    private IntRect standing = new IntRect(0, 0, 24, 24);
+    private IntRect midAir =  new IntRect(24, 0, 24, 24);
     
     
     private bool faceRight = false;
     public Hero() : base("characters")
     {
-        sprite.TextureRect = new IntRect(0, 0, 24, 24);
+        sprite.TextureRect = standing;
         sprite.Origin = new Vector2f(12, 12);
     }
 
@@ -31,18 +34,22 @@ public class Hero : Entity
         if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
         {
             scene.TryMove(this, new Vector2f(-WalkSpeed * dt, 0));
+            isRunning();
             faceRight = false;
         }
         if (Keyboard.IsKeyPressed(Keyboard.Key.Right))
         {
             scene.TryMove(this, new Vector2f(WalkSpeed * dt, 0));
+            isRunning();
             faceRight = true;
         }
 
         if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
         {
+            
             if (isGrounded && !isUpPressed)
             {
+                sprite.TextureRect = midAir;
                 verticalSpeed = -JumpForce;
                 isUpPressed = true;
             }
@@ -50,9 +57,21 @@ public class Hero : Entity
             {
                 isUpPressed = false;
             }
-
+        
         }
+        if (!Keyboard.IsKeyPressed(Keyboard.Key.Up) &&
+            !Keyboard.IsKeyPressed(Keyboard.Key.Right) &&
+            !Keyboard.IsKeyPressed(Keyboard.Key.Left))
+        {
+            sprite.TextureRect = standing;
+        }
+        
 
+        if (!isGrounded)
+        {
+            sprite.TextureRect = midAir;
+        }
+        
         isGrounded = false;
         Vector2f velocity = new Vector2f(0, verticalSpeed * dt);
         if (scene.TryMove(this, velocity))
@@ -71,7 +90,7 @@ public class Hero : Entity
         
         verticalSpeed += GravityForce * dt;
         if (verticalSpeed > 500.0f) verticalSpeed = 500.0f;
-
+        timer += dt;
     }
 
     public override FloatRect Bounds
@@ -80,7 +99,7 @@ public class Hero : Entity
         {
             var bounds = base.Bounds;
             bounds.Left += 3;
-            bounds.Width -= 6;
+            bounds.Width -= 7;
             bounds.Top += 3;
             bounds.Height -= 3;
             return bounds;
@@ -96,9 +115,26 @@ public class Hero : Entity
         return left || right || top || bottom;
     }
 
+    private void isRunning()
+    {
+        switch (timer)
+        {
+            case < 0.2f :
+                sprite.TextureRect = standing;
+                break;
+            case > 0.2f and < 0.4f :
+                sprite.TextureRect = midAir;
+                break;
+            case > 0.4f:
+                timer = 0;
+                break;
+        }
+    }
+
     public override void Render(RenderTarget target)
     {
         sprite.Scale = new Vector2f(faceRight ? -1 : 1, 1); // Om faceRight = true är x = -1, annars x = 1. Y = 1 alltid.
+        
         base.Render(target);
     }
 }

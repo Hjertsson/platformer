@@ -44,6 +44,10 @@ public class Scene
             FloatRect boundsB = other.Bounds;
             if (Collision.RectangleRectangle(boundsA, boundsB, out Collision.Hit hit))
             {
+                if (other is Breakable) // Om en kollision sker med ett objekt other som är av typen breakable
+                {
+                    other.CheckHit(this);
+                }
                 entity.Position += hit.Normal * hit.Overlap;
                 i = -1;
                 collided = true;
@@ -65,23 +69,6 @@ public class Scene
         textures.Add(name, texture);
         return texture; // Om inte texturen finns så skapas en ny textur med namnet som skickas in i dictionaryn, returnerar sedan den nya texturen.
     }
-    public void UpdateAll(float dt)
-    {
-        HandleSceneChange();
-        for (int i = entities.Count - 1; i >= 0; i--)
-        {
-            Entity entity = entities[i];
-            entity.Update(this, dt);
-        }
-
-        for (int i = 0; i < entities.Count;)
-        {
-            Entity entity = entities[i];
-            if (entity.Dead) entities.RemoveAt(i);
-            else i++;
-        }
-    }
-
     public void Reload()
     {
         nextScene = currentScene;
@@ -142,6 +129,11 @@ public class Scene
                         coin.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
                         Spawn(coin);
                         break;
+                    case "b":
+                        Breakable breakable = new Breakable();
+                        breakable.Position = new Vector2f(float.Parse(words[1]), float.Parse(words[2]));
+                        Spawn(breakable);
+                        break;
                 }
             }
         }
@@ -163,7 +155,22 @@ public class Scene
         found = default(T);
         return false;
     }
-    
+    public void UpdateAll(float dt)
+    {
+        HandleSceneChange();
+        for (int i = entities.Count - 1; i >= 0; i--)
+        {
+            Entity entity = entities[i];
+            entity.Update(this, dt);
+        }
+
+        for (int i = 0; i < entities.Count;)
+        {
+            Entity entity = entities[i];
+            if (entity.Dead) entities.RemoveAt(i);
+            else i++;
+        }
+    }
     public void RenderAll(RenderTarget target)
     {
         for (int i = 0; i < entities.Count; i++)
