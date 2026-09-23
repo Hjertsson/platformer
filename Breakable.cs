@@ -5,14 +5,10 @@ namespace platformer;
 
 public class Breakable : Platform
 {
-    private bool solid;
-    
     public Breakable()
     {
         sprite.TextureRect = new IntRect(0, 36, 18, 18);
     }
-
-    public override bool Solid => true;
     
     public override void CheckHit(Scene scene)
     {
@@ -20,17 +16,13 @@ public class Breakable : Platform
         {
             if (Collision.RectangleRectangle(Bounds, hero.Bounds, out _)) // Om det skett en kollision mellan breakableobjektet och hero.
             {
-                if (hero.Position.Y - hero.Bounds.Height /2 >= Position.Y) // Om kollisionen skedde när hero var under breakable objektet
+                if (hero.Position.Y - hero.Bounds.Height /2 >= Position.Y + 6 
+                    && hero.Position.X - hero.Bounds.Width / 2 >= Position.X - Bounds.Width
+                    && hero.Position.X + hero.Bounds.Width /2 <= Position.X + Bounds.Width) // Om kollisionen skedde när hero var under breakable objektet
                 {
                     Dead = true; // Ta bort breakableobjektet
                 }
             }            
         }
-    }
-
-    public override void Update(Scene scene, float dt)
-    {
-        //CheckHit(scene);
-        base.Update(scene, dt);
     }
 }

@@ -14,32 +14,13 @@ class Program
         Scene scene = new Scene();
         scene.Load("level0");
         
-       /* foreach (string line in File.ReadLines(file,Encoding.UTF8))
-        {
-            string parsed = line.Trim();
-            if (parsed.Length != 0)
-            {
-                int commentAt = parsed.IndexOf('#');
-                if (commentAt >= 0)
-                {
-                    parsed = parsed.Substring(0, commentAt);
-                    parsed = parsed.Trim();
-                }
-                Console.WriteLine(parsed + "  " + parsed.Length);
-            }
-            
-
-
-        }//TODO: Fråga om detta på programmeringsstugan senare
-        */
-
         using (var window = new RenderWindow(
                    new VideoMode(800, 600), "Platformer"))
         {
             window.Closed += (o, e) => window.Close();
             window.SetView(new View(
-                new Vector2f(200, 150), //För att få kameran att följa spelaren så lägg denna i while loopen och ändra första värdet till spelarens position
-                new Vector2f(400, 300)));
+                new Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), //För att få kameran att följa spelaren så lägg denna i while loopen och ändra första värdet till spelarens position
+                new Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT)));
             Clock clock = new Clock();
             while (window.IsOpen)
             {

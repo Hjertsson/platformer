@@ -63,9 +63,6 @@ public class Scene
 
         string fileName = $"assets/{name}.png";
         Texture texture = new Texture(fileName);
-        
-        Console.WriteLine(fileName); //TODO: Ett test för att försäkra oss om att en textur bara skapas 1 gång.
-        
         textures.Add(name, texture);
         return texture; // Om inte texturen finns så skapas en ny textur med namnet som skickas in i dictionaryn, returnerar sedan den nya texturen.
     }
@@ -137,12 +134,11 @@ public class Scene
                 }
             }
         }
-
         currentScene = nextScene;
         nextScene = null;
     }
 
-    public bool FindByType<T>(out T found) where T : Entity //TODO: Vad är det som sker i denna funktionen
+    public bool FindByType<T>(out T found) where T : Entity 
     {
         foreach (var entity in entities)
         {

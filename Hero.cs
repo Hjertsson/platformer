@@ -13,11 +13,10 @@ public class Hero : Entity
     private float verticalSpeed;
     private bool isGrounded;
     private bool isUpPressed;
-    private IntRect standing = new IntRect(0, 0, 24, 24);
-    private IntRect midAir =  new IntRect(24, 0, 24, 24);
-    
-    
+    private readonly IntRect standing = new IntRect(0, 0, 24, 24);
+    private readonly IntRect midAir =  new IntRect(24, 0, 24, 24);
     private bool faceRight = false;
+    
     public Hero() : base("characters")
     {
         sprite.TextureRect = standing;
@@ -30,24 +29,23 @@ public class Hero : Entity
         {
             scene.Reload();
         }
-        
         if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
         {
             scene.TryMove(this, new Vector2f(-WalkSpeed * dt, 0));
-            isRunning();
+            IsRunning();
             faceRight = false;
         }
         if (Keyboard.IsKeyPressed(Keyboard.Key.Right))
         {
             scene.TryMove(this, new Vector2f(WalkSpeed * dt, 0));
-            isRunning();
+            IsRunning();
             faceRight = true;
         }
 
         if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
         {
-            
-            if (isGrounded && !isUpPressed)
+            if (isGrounded && !isUpPressed) // Om isGrounded är true och isUpPressed (pil up knappen) är false, så sätter vi sprite.textureRect (Spritens hitbox) till midair
+                                            // Vilket stoppar sprng animationen. Sätter veticalSpeed till det negativa värdet av jumpForce.
             {
                 sprite.TextureRect = midAir;
                 verticalSpeed = -JumpForce;
@@ -57,39 +55,34 @@ public class Hero : Entity
             {
                 isUpPressed = false;
             }
-        
         }
-        if (!Keyboard.IsKeyPressed(Keyboard.Key.Up) &&
+        if (!Keyboard.IsKeyPressed(Keyboard.Key.Up) && // Om spelaren inte trycker på någon knapp, så ska spriten ha sin "idle" textur
             !Keyboard.IsKeyPressed(Keyboard.Key.Right) &&
             !Keyboard.IsKeyPressed(Keyboard.Key.Left))
         {
             sprite.TextureRect = standing;
         }
-        
-
-        if (!isGrounded)
+        if (!isGrounded) //Om karaktären är i luften, så sätts TextureRect till midair
         {
             sprite.TextureRect = midAir;
         }
         
         isGrounded = false;
-        Vector2f velocity = new Vector2f(0, verticalSpeed * dt);
+        Vector2f velocity = new Vector2f(0, verticalSpeed * dt); // Sätter spelarens velocity
         if (scene.TryMove(this, velocity))
         {
-            if (verticalSpeed > 0.0f)
+            if (verticalSpeed > 0.0f) //Om karaktärens verticalspeed är 0 så betyder det att den är på marken, och isGrounded sätts till true
             {
                 isGrounded = true;
                 verticalSpeed = 0.0f;
             }
             else
             {
-                verticalSpeed = 0.5f * verticalSpeed;
+                verticalSpeed = 0.5f * verticalSpeed; //Om inte vertical speed är 0 så halveras verticcal speed
             }
-        }    
-        
-        
+        }
         verticalSpeed += GravityForce * dt;
-        if (verticalSpeed > 500.0f) verticalSpeed = 500.0f;
+        if (verticalSpeed > 500.0f) verticalSpeed = 500.0f; // Vertical speed får aldrig vara mer än 500
         timer += dt;
     }
 
@@ -107,15 +100,15 @@ public class Hero : Entity
     }
     private bool IsOutOfBounds()
     {
-        bool left = this.sprite.Position.X < 0;
-        bool top = this.sprite.Position.Y < 0;
-        bool right = this.sprite.Position.X >= Program.SCREEN_WIDTH;
-        bool bottom = this.sprite.Position.Y >= Program.SCREEN_HEIGHT;
+        bool left = sprite.Position.X < 0;
+        bool top = sprite.Position.Y < 0;
+        bool right = sprite.Position.X >= Program.SCREEN_WIDTH;
+        bool bottom = sprite.Position.Y >= Program.SCREEN_HEIGHT;
         
         return left || right || top || bottom;
     }
 
-    private void isRunning()
+    private void IsRunning()
     {
         switch (timer)
         {

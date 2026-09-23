@@ -10,30 +10,28 @@ public class Entity
     protected readonly Sprite sprite;
     public bool Dead;
     
-    protected Entity() {}
     protected Entity(string textureName)
     {
         this.textureName = textureName;
         sprite = new Sprite();
     }
 
-    public Vector2f Position
+    public Vector2f Position // TODO: Sätt en förklaring efter föreläsning
     {
         get => sprite.Position;
         set => sprite.Position = value;
     }
 
-    public virtual FloatRect Bounds => sprite.GetGlobalBounds();
+    public virtual FloatRect Bounds => sprite.GetGlobalBounds(); 
 
-    public virtual void Create(Scene scene)
+    public void Create(Scene scene)
     {
         sprite.Texture = scene.LoadTexture(textureName);
     }
 
     public virtual bool Solid => false; 
-    public virtual void CheckHit(Scene scene){}
+    public virtual void CheckHit(Scene scene){} // Är virtual för att kunna använda breakables override i Scene
     public virtual void Update(Scene scene, float dt) {}
-
     public virtual void Render(RenderTarget target)
     {
         target.Draw(sprite);

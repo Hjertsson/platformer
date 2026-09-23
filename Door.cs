@@ -20,12 +20,12 @@ public class Door : Entity
     {
         if (Unlocked)
         {
-            sprite.Color = Color.Black;
+            sprite.Color = Color.Black; // Sätter texturens färg till svart
             if (scene.FindByType<Hero>(out Hero hero))
             {
                 if (Collision.RectangleRectangle(this.Bounds, hero.Bounds, out _))
                 {
-                    scene.Load("level1");
+                    scene.Load(NextRoom);
                 }
             }
         }
